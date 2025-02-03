@@ -1,5 +1,11 @@
+% This function gives a normalized secant (direction) between present and last point.
+% The slope calculated depends on the number of inputs:
+%   If an array is given then slope is calculated using last two points.
+%   If two points are given as input then the slope of these two points are
+%   given.
+
 function slope = secant(varargin)
-% gives a normalized secant between present and last point.
+
 if nargin == 2
     final = varargin{2};
     initial = varargin{1};

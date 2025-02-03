@@ -1,18 +1,30 @@
+% This function calculates the solution point after the guess is updated
+% from the arclength8.m. This function uses the Newton Raphson algorithm to
+% get convergence and updates the guesses on a circle of radius equal to
+% the step length.
+
+% This function takes the inputs:
+%   ds - step length.
+%   xstore - the array of calculated solution points.
+%   f - function for which solution branch needs to be calculated.
+%   Jx - Jacobian of function f.
+%   xg - the updated guess from the arclength8.m file.
+%   a - relaxation parameter for ensuring smooth convergence.
+
+% The output contains:
+%   xg - The updated guess from NR method.
+%   successfull - tells if the convergence was met or not (1 if convergence and 0 otherwise)
+%   xg_store - array of all the guesses obtained in the iterations.
+%   A - used for debugging
+
 function [xg,successful,xg_store, A] = cont4(ds,xstore,Jx,f,xg,a)
     xg_store = xg;
     xn = xstore.point(:,end);
     dx = xg - xn;
 
-    tol = norm(dx)*1e-2;
-    maxiter = 2e3;
+    tol = norm(dx)*1e-2;    % tolerance for convergence.
+    maxiter = 2e3;          % max number of iterations.
     numiter = 0;
-
-%     theta = linspace(0,0.28,20);
-%     theta2 = linspace(0,-pi/6,20);
-%     figure(1)
-%     hold on
-%     plot(sin(theta),cos(theta),"blue","LineWidth",2)
-%     plot(xn(2) + ds*cos(theta2),xn(1)+ds*sin(theta2),"green","LineWidth",2)
 
     while norm(dx) > tol && numiter < maxiter
         J = feval(Jx,xg);
@@ -27,40 +39,21 @@ function [xg,successful,xg_store, A] = cont4(ds,xstore,Jx,f,xg,a)
         dx = A\B;
         xg = xg + a*dx;
 
+        % force the solution on the circle.
         Ds = norm(xg - xn);
         Dx = xg - xn;
         xg = xn + Dx*ds/Ds;
         
         numiter = numiter + 1;
         xg_store = [xg_store,xg];
-%         figure(1)
-%         hold on
-%         if numiter == 1
-%             line([xn(end),xg(end)],[xn(1),xg(1)],"Color","cyan","LineWidth",2)
-%         end
-%         scatter(xn(end),xn(1),100,"filled","diamond","MarkerFaceColor","#fb8500")
-%         scatter(xg(end),xg(1),90,"filled")
-%         ylim([0.96 1.015])
-%         xlabel("x","FontSize",20,"Interpreter","latex")
-%         ylabel("y","FontSize",20,"Interpreter","latex")
-%         set(gca,"FontSize",20,"TickLabelInterpreter","latex")
-%         set(gcf,"Position",[488 156.2000 903.4000 586.4000])
-%         exportgraphics(gca,"test.gif","Append",true)
+
     end
+
+    % check if the convergence was successfull or not.
     if norm(dx)<=tol
         successful = 1;
     else
         successful = 0;
     end
-    figure(1)
-    hold on
-    scatter(xn(end),xn(1),"filled","blue")
-%     scatter(xg_store(end,:),xg_store(1,:))
-    ylim([-0.1 3])
-    xlim([-5 5])
-    xlabel("$\mu_{0}$","FontSize",20,"Interpreter","latex")
-    ylabel("A","FontSize",20,"Interpreter","latex")
-    set(gca,"FontSize",20,"TickLabelInterpreter","latex")
-    set(gcf,"Position",[488 156.2000 903.4000 586.4000])
-    exportgraphics(gca,"subcritical.gif","Append",true)
+    
 end

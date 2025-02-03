@@ -1,3 +1,5 @@
+% This script gives the solution branches for the Vanderpol oscillator.
+
 clear; close all
 %% Initialization
 % create a struct with required parameters as fields of the struct.
